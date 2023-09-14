@@ -1,0 +1,43 @@
+/**
+ * 下方引入的为uView UI的集成样式文件，为scss预处理器，其中包含了一些"u-"开头的自定义变量
+ * uView自定义的css类名和scss变量，均以"u-"开头，不会造成冲突，请放心使用 
+ */
+@import 'uview-ui/theme.scss';
+
+image {
+	width: 100%;
+	height: 100%;
+}
+
+	.d-flex{
+		display: flex;
+	}
+	.flex {
+		flex: 1;
+	}
+	
+	
+	/* 文字尺寸 */
+	$font-sm:24upx;
+	$font-base:28upx;
+	$font-lg:32upx;
+	
+	/*文字颜色*/
+	$font-color-dark:#303133;
+	$font-color-base:#606266;
+	$font-color-light:#909399;
+	$font-color-disabled:#C0C4CC;
+	$font-color-spec:#d6003c;
+	$font-color-gray:#999999;
+	$font-color-red:#dd0037;
+	$font-color-ccc:#cccccc;
+	$font-color-999:#999999;
+	$font-color-666:#666666;
+	$font-color-333:#333333;
+	$font-color-000:#000000;
+	
+	/* 背景颜色 */
+	$image-bg-color:#eeeeee;
+	$bgcolor_white:#ffffff;
+	$all_bgcolor:#f4f4f4;
+	$vui_bgcolor:#8c0027;
