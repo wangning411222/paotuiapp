@@ -284,7 +284,7 @@
 				},
 				isAll: true,
 				buildList: [],
-				selectTxt: '', //提交的楼栋id
+				selectTxt: -1, //提交的楼栋id
 				sessionTxt: "", //选中的楼栋name
 				schoolId: ""
 
@@ -298,7 +298,7 @@
 
 			this.identity = uni.getStorageSync('userInfo').gid
 			this.schoolId = uni.getStorageSync('userInfo').nid;
-			this.selectTxt = uni.getStorageSync('buildId')
+			this.selectTxt = uni.getStorageSync('buildId') ? uni.getStorageSync('buildId') : -1
 			this.sessionTxt = uni.getStorageSync('buildName')
 			if (this.sessionTxt) {
 				this.isAll = false
@@ -429,12 +429,15 @@
 		methods: {
 			// 点击全部
 			selectAll() {
-				uni.setStorageSync('buildId', '')
+				uni.setStorageSync('buildId', -1)
 				uni.setStorageSync('buildName', '')
 				this.isAll = true
 				this.buildList.forEach(item => {
 					item.checked = false
 				})
+				this.selectTxt = -1
+				this.sessionTxt = ""
+				this.sectionChange(this.current)
 			},
 			// 确认选择楼栋
 			buildComfirm() {
@@ -458,6 +461,7 @@
 					this.isAll = true
 				}
 				this.buildShow = false;
+				this.sectionChange(this.current)
 
 			},
 			getBuild() {
