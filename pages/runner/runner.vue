@@ -284,7 +284,7 @@
 				},
 				isAll: true,
 				buildList: [],
-				selectTxt: -1, //提交的楼栋id
+				selectTxt: '', //提交的楼栋id
 				sessionTxt: "", //选中的楼栋name
 				schoolId: ""
 
@@ -298,15 +298,32 @@
 
 			this.identity = uni.getStorageSync('userInfo').gid
 			this.schoolId = uni.getStorageSync('userInfo').nid;
-			this.selectTxt = uni.getStorageSync('buildId') ? uni.getStorageSync('buildId') : -1
+			this.selectTxt = uni.getStorageSync('buildId')? uni.getStorageSync('buildId'):-1
 			this.sessionTxt = uni.getStorageSync('buildName')
 			if (this.sessionTxt) {
 				this.isAll = false
 			}
+     if (this.identity == 6){
+        this.init_list({
+						page: 1,
+						status: this.status,
+						schoolid: this.schoolId,
+						building_num: this.selectTxt
+					});
+     }else{
+          this.init_list4({
+						page: 1,
+						status: 2,
+						schoolid: this.schoolId,
+						building_num: this.selectTxt
+					});
+     }
+     
 
 		},
 		computed: {
 			goods() {
+      console.log(this.tabs[0].goods,'this.tabs[0].goods')
 				return this.tabs[0].goods;
 			},
 			goods2() {
@@ -321,7 +338,9 @@
 			...mapGetters("config", ["config"]),
 		},
 		onPullDownRefresh() {
+    
 			if (this.identity == 6) {
+
 				this.tabs[0].goods = [];
 				this.tabs[0].page = 1;
 				this.tabs[1].goods = [];
@@ -329,6 +348,7 @@
 				this.tabs[2].goods = [];
 				this.tabs[2].page = 1;
 				this.sectionChange(this.current)
+        console.log('onPullDownRefreshonPullDownRefreshonPullDownRefresh')
 			} else {
 				this.tabsinner.goods = [];
 				this.tabsinner.page = 1;
@@ -429,19 +449,15 @@
 		methods: {
 			// 点击全部
 			selectAll() {
-				uni.setStorageSync('buildId', -1)
+				uni.setStorageSync('buildId', '')
 				uni.setStorageSync('buildName', '')
 				this.isAll = true
 				this.buildList.forEach(item => {
 					item.checked = false
 				})
-				this.selectTxt = -1
-				this.sessionTxt = ""
-				this.sectionChange(this.current)
 			},
 			// 确认选择楼栋
 			buildComfirm() {
-				console.log()
 				let arr = [],
 					arr2 = [];
 				this.buildList.forEach((item, index) => {
@@ -461,7 +477,6 @@
 					this.isAll = true
 				}
 				this.buildShow = false;
-				this.sectionChange(this.current)
 
 			},
 			getBuild() {
@@ -470,6 +485,7 @@
 						let schoolList = res.message.school_list.filter(item => {
 							return item.schoolid == this.schoolId
 						})
+            console.log(schoolList[0],'schoolList[0]schoolList[0]')
 						let arr = schoolList[0].building_num
 						this.buildList = arr.map(item => {
 							return {
@@ -478,7 +494,7 @@
 							}
 						})
 						this.buildList.forEach((item, index) => {
-							if (this.selectTxt.indexOf(index) >= 0) {
+							if (this.selectTxt!=-1&&this.selectTxt.indexOf(index) >= 0) {
 								item.checked = true
 							} else {
 								item.checked = false
@@ -503,11 +519,16 @@
 					_this.concatGoods4(msg);
 				});
 			},
-			concatGoods4(msg) {
+			concatGoods4(msg,status) {
 				let _this = this;
 				let curTab = this.tabsinner;
 				let newGoodsData = msg.orderlist;
 				curTab.maxpage = msg.maxpage;
+        if (status === 'loading') {
+						curTab.goods = curTab.goods.concat(newGoodsData);  //追加新数据
+				} else {
+					curTab.goods = newGoodsData
+				}
 				curTab.goods = curTab.goods.concat(newGoodsData); //追加新数据
 			},
 			handleRefresh() {
@@ -595,14 +616,17 @@
 				}
 
 			},
-			concatGoods3(msg) {
+			concatGoods3(msg,status) {
 				let _this = this;
 				let curTab = this.tabs[2];
 				let newGoodsData = msg.orderlist;
 				curTab.maxpage = msg.maxpage;
-				curTab.goods = curTab.goods.concat(newGoodsData); //追加新数据
+				if (status === 'loading') {
+					curTab.goods = curTab.goods.concat(newGoodsData); //追加新数据
+				} else {
+					curTab.goods = newGoodsData
+				}
 
-				console.log(curTab)
 			},
 			runnerOrderPoolList(data, callback = (company_list) => {}) {
 				let _this = this;
@@ -657,7 +681,8 @@
 			zhuandan(order_token) {
 				let _this = this;
 				_this.$store.dispatch('runner/runnerZdQrcode', {
-					'order_token': order_token
+					'order_token': order_token,
+          "schoolid":_this.schoolId
 				}).then((res) => {
 					if (res.code == 0) {
 						_this.ZdQrcodeShow = true

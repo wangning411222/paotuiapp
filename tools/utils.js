@@ -106,7 +106,9 @@ function request(url, method, data, showLoading = true) {
 		}
 
 		data = data || {};
-
+    if (data.schoolid) {
+			schoolid = data.schoolid
+		}
 		data = toQueryString(data)
 
 
@@ -114,10 +116,6 @@ function request(url, method, data, showLoading = true) {
 		let schoolid;
 		if (schoolInfo && schoolInfo.schoolid) {
 			schoolid = schoolInfo.schoolid;
-		}
-
-		if (data.schoolid) {
-			schoolid = data.schoolid
 		}
 		uni.request({
 			url: reBuildUrl(url) + '&isdev=' + dev + '&schoolid=' + schoolid,
