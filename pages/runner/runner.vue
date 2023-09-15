@@ -77,7 +77,8 @@
 									{{ item.company_name }}
 								</view>
 								<view class="name" @click.stop="openMapApp(item.company_address)"><text user-select>{{
-									item.company_address }}</text> <u-icon name="map" color="#0099ee" size="28"></u-icon></view>
+									item.company_address }}</text> <u-icon name="map" color="#0099ee"
+										size="28"></u-icon></view>
 							</view>
 						</view>
 
@@ -89,8 +90,7 @@
 							<view class="padding-right-20 font-bold" style="align-self: center;white-space: nowrap;">送货
 							</view>
 							<view>
-								<view style="font-size: 34rpx;" class="font-bold"
-									@click.stop="openMapApp(item.schoolinfo)">
+								<view style="font-size: 34rpx;" class="font-bold" @click.stop="openMapApp(item.schoolinfo)">
 									<text user-select>{{ item.schoolinfo }}{{ item.address }}</text> <u-icon name="map"
 										color="#0099ee" size="28"></u-icon>
 								</view>
@@ -136,10 +136,10 @@
 							<view class="padding-right-20 font-bold" style="align-self: center;white-space: nowrap;">送货
 							</view>
 							<view>
-								<view style="font-size: 34rpx;" class="font-bold"
-									@click.stop="openMapApp(item.schoolinfo)">
+								<view style="font-size: 34rpx;" class="font-bold" @click.stop="openMapApp(item.schoolinfo)">
 									{{
-										item.schoolinfo }}{{ item.address }}<u-icon name="map" color="#0099ee" size="28"></u-icon>
+										item.schoolinfo }}{{ item.address }}<u-icon name="map" color="#0099ee"
+										size="28"></u-icon>
 								</view>
 							</view>
 						</view>
@@ -188,8 +188,7 @@
 							<view class="padding-right-20 font-bold" style="align-self: center; white-space: nowrap">送货
 							</view>
 							<view>
-								<view style="font-size: 34rpx" class="font-bold"
-									@click.stop="openMapApp(item.schoolinfo)">
+								<view style="font-size: 34rpx" class="font-bold" @click.stop="openMapApp(item.schoolinfo)">
 									{{ item.schoolinfo }}{{ item.address }}
 									<u-icon name="map" color="#0099ee" size="28"></u-icon>
 								</view>
@@ -224,7 +223,8 @@
 			<u-popup v-model="buildShow" mode="top">
 				<view class="build-box">
 					<button v-for="(item, index) in buildList" :key="index" class="build-btn"
-						:class="item.checked ? 'build-check' : ''" @click="checkBuild(item, index)" :plain="true">{{ item.name
+						:class="item.checked ? 'build-check' : ''" @click="checkBuild(item, index)" :plain="true">{{
+							item.name
 						}}</button>
 				</view>
 				<view class="build-confirm">
@@ -237,307 +237,281 @@
 </template>
 
 <script>
-	import {
-		mapGetters,
-		mapMutations
-	} from "vuex";
+import {
+	mapGetters,
+	mapMutations
+} from "vuex";
 
-	export default {
+export default {
 
-		data() {
-			return {
-				tabs: [{
-						name: '新任务',
-						goods: [],
-						page: 1,
-						maxpage: 0
-					},
-					{
-						name: '待取货',
-						goods: [],
-						page: 1,
-						maxpage: 0
-					},
-					{
-						name: '配送中',
-						goods: [],
-						page: 1,
-						maxpage: 0
-					}
-				],
-				current: 0,
-				ZdQrcodeShow: false,
-				ZdQrcode: '',
+	data() {
+		return {
+			tabs: [{
+				name: '新任务',
+				goods: [],
+				page: 1,
+				maxpage: 0
+			},
+			{
+				name: '待取货',
+				goods: [],
+				page: 1,
+				maxpage: 0
+			},
+			{
+				name: '配送中',
+				goods: [],
+				page: 1,
+				maxpage: 0
+			}
+			],
+			current: 0,
+			ZdQrcodeShow: false,
+			ZdQrcode: '',
+			status: 2,
+			tabsinner: {
+				goods: [],
+				page: 1,
+				maxpage: 0,
+
+			},
+			identity: '',
+			buildShow: false,
+			customStyle: {
+				padding: "20rpx",
+				"font-size": "16px",
+				height: "80rpx",
+			},
+			isAll: true,
+			buildList: [],
+			selectTxt: -1, //提交的楼栋id
+			sessionTxt: "", //选中的楼栋name
+			schoolId: ""
+
+		};
+	},
+	onShow() {
+		this.getBuild()
+	},
+	onLoad() {
+		console.log('执行没``````````')
+		this.identity = uni.getStorageSync('userInfo').gid
+		this.schoolId = uni.getStorageSync('userInfo').nid;
+		this.selectTxt = uni.getStorageSync('buildId') ? uni.getStorageSync('buildId') : -1
+		this.sessionTxt = uni.getStorageSync('buildName')
+		if (this.sessionTxt) {
+			this.isAll = false
+		}
+		if (this.identity == 6) {
+			this.init_list({
+				page: 1,
+				status: this.status,
+				schoolid: this.schoolId,
+				building_num: this.selectTxt
+			});
+		} else {
+			this.init_list4({
+				page: 1,
 				status: 2,
-				tabsinner: {
-					goods: [],
-					page: 1,
-					maxpage: 0,
+				schoolid: this.schoolId,
+				building_num: this.selectTxt
+			});
+		}
 
-				},
-				identity: '',
-				buildShow: false,
-				customStyle: {
-					padding: "20rpx",
-					"font-size": "16px",
-					height: "80rpx",
-				},
-				isAll: true,
-				buildList: [],
-				selectTxt: '', //提交的楼栋id
-				sessionTxt: "", //选中的楼栋name
-				schoolId: ""
 
-			};
+	},
+	computed: {
+		goods() {
+			return this.tabs[0].goods;
 		},
-		onShow() {
-			uni.startPullDownRefresh();
-			this.getBuild()
+		goods2() {
+			return this.tabs[1].goods;
 		},
-		onLoad() {
-
-			this.identity = uni.getStorageSync('userInfo').gid
-			this.schoolId = uni.getStorageSync('userInfo').nid;
-			this.selectTxt = uni.getStorageSync('buildId')? uni.getStorageSync('buildId'):-1
-			this.sessionTxt = uni.getStorageSync('buildName')
-			if (this.sessionTxt) {
-				this.isAll = false
-			}
-     if (this.identity == 6){
-        this.init_list({
-						page: 1,
-						status: this.status,
-						schoolid: this.schoolId,
-						building_num: this.selectTxt
-					});
-     }else{
-          this.init_list4({
-						page: 1,
-						status: 2,
-						schoolid: this.schoolId,
-						building_num: this.selectTxt
-					});
-     }
-     
-
+		goods3() {
+			return this.tabs[2].goods;
 		},
-		computed: {
-			goods() {
-      console.log(this.tabs[0].goods,'this.tabs[0].goods')
-				return this.tabs[0].goods;
-			},
-			goods2() {
-				return this.tabs[1].goods;
-			},
-			goods3() {
-				return this.tabs[2].goods;
-			},
-			goods4() {
-				return this.tabsinner.goods;
-			},
-			...mapGetters("config", ["config"]),
+		goods4() {
+			return this.tabsinner.goods;
 		},
-		onPullDownRefresh() {
-    
-			if (this.identity == 6) {
-
-				this.tabs[0].goods = [];
-				this.tabs[0].page = 1;
-				this.tabs[1].goods = [];
-				this.tabs[1].page = 1;
-				this.tabs[2].goods = [];
-				this.tabs[2].page = 1;
-				this.sectionChange(this.current)
-        console.log('onPullDownRefreshonPullDownRefreshonPullDownRefresh')
-			} else {
-				this.tabsinner.goods = [];
-				this.tabsinner.page = 1;
-				if (this.goods4.length == 0) {
-					this.init_list4({
-						page: 1,
-						status: this.status,
-						schoolid: this.schoolId,
-						building_num: this.selectTxt
-					});
-				}
-			}
-
-
-		},
-		onReachBottom() {
-			let _this = this;
-			if (this.identity == 6) {
-				if (this.current == 0) {
-					let maxpage = this.tabs[0].maxpage;
-					let page = this.tabs[0].page;
-					if (maxpage > page) {
-						this.tabs[0].page = page + 1;
-						this.runnerOrderPoolList({
-							'page': page + 1,
-							'status': 0,
-							schoolid: this.schoolId,
-							building_num: this.selectTxt
-						}, function(msg) {
-							_this.concatGoods(msg, 'loading');
-						})
-					} else {
-						_this.$refs.uToast.show({
-							title: "没有更多了",
-						})
-					}
-				}
-
-				if (this.current == 1) {
-					let maxpage = this.tabs[1].maxpage;
-					let page = this.tabs[1].page;
-					if (maxpage > page) {
-						this.tabs[1].page = page + 1;
-						this.runnerOrderPoolList({
-							'page': page + 1,
-							'status': 1,
-							schoolid: this.schoolId,
-							building_num: this.selectTxt
-						}, function(msg) {
-							_this.concatGoods2(msg, 'loading');
-						})
-					} else {
-						_this.$refs.uToast.show({
-							title: "没有更多了",
-						})
-					}
-				}
-				if (this.current == 2) {
-					let maxpage = this.tabs[2].maxpage;
-					let page = this.tabs[2].page;
-					if (maxpage > page) {
-						this.tabs[2].page = page + 1;
-						this.runnerOrderPoolList({
-							'page': page + 1,
-							'status': 2,
-							schoolid: this.schoolId,
-							building_num: this.selectTxt
-						}, function(msg) {
-							_this.concatGoods3(msg, 'loading');
-						})
-					} else {
-						_this.$refs.uToast.show({
-							title: "没有更多了",
-						})
-					}
-				}
-			} else {
-				let maxpage = this.tabsinner.maxpage;
-				let page = this.tabsinner.page;
+		...mapGetters("config", ["config"]),
+	},
+	onReachBottom() {
+		let _this = this;
+		if (this.identity == 6) {
+			if (this.current == 0) {
+				let maxpage = this.tabs[0].maxpage;
+				let page = this.tabs[0].page;
 				if (maxpage > page) {
-					this.tabsinner.page = page + 1;
+					this.tabs[0].page = page + 1;
 					this.runnerOrderPoolList({
-						page: page + 1,
-						status: 2,
+						'page': page + 1,
+						'status': 0,
 						schoolid: this.schoolId,
 						building_num: this.selectTxt
-					}, function(msg) {
-						_this.concatGoods4(msg);
-					});
+					}, function (msg) {
+						_this.concatGoods(msg, 'loading');
+					})
 				} else {
 					_this.$refs.uToast.show({
 						title: "没有更多了",
-					});
+					})
 				}
 			}
 
-		},
-		methods: {
-			// 点击全部
-			selectAll() {
-				uni.setStorageSync('buildId', '')
-				uni.setStorageSync('buildName', '')
-				this.isAll = true
-				this.buildList.forEach(item => {
-					item.checked = false
-				})
-			},
-			// 确认选择楼栋
-			buildComfirm() {
-				let arr = [],
-					arr2 = [];
-				this.buildList.forEach((item, index) => {
-					if (item.checked) {
-						arr.push(index)
-						arr2.push(item.name)
-					}
-					return item.checked
-				})
-
-
-				this.selectTxt = arr.join(",")
-				this.sessionTxt = arr2.join(",")
-				uni.setStorageSync('buildId', this.selectTxt)
-				uni.setStorageSync('buildName', this.sessionTxt)
-				if (!this.selectTxt) {
-					this.isAll = true
-				}
-				this.buildShow = false;
-
-			},
-			getBuild() {
-				this.$store.dispatch('config/getConfig', {}).then((res) => {
-					if (res.code == 0) {
-						let schoolList = res.message.school_list.filter(item => {
-							return item.schoolid == this.schoolId
-						})
-            console.log(schoolList[0],'schoolList[0]schoolList[0]')
-						let arr = schoolList[0].building_num
-						this.buildList = arr.map(item => {
-							return {
-								name: item,
-								checked: false
-							}
-						})
-						this.buildList.forEach((item, index) => {
-							if (this.selectTxt!=-1&&this.selectTxt.indexOf(index) >= 0) {
-								item.checked = true
-							} else {
-								item.checked = false
-							}
-						})
-					}
-				});
-			},
-			// 选择楼栋
-			checkBuild(item, index) {
-				this.buildList[index].checked = !this.buildList[index].checked
-				this.isAll = false
-			},
-			// 楼栋筛选弹窗
-			showBuildDialog() {
-				this.buildShow = true
-			},
-			init_list4: function(data, callback = () => {}) {
-				let _this = this;
-
-				this.runnerOrderPoolList(data, function(msg) {
-					_this.concatGoods4(msg);
-				});
-			},
-			concatGoods4(msg,status) {
-				let _this = this;
-				let curTab = this.tabsinner;
-				let newGoodsData = msg.orderlist;
-				curTab.maxpage = msg.maxpage;
-        if (status === 'loading') {
-						curTab.goods = curTab.goods.concat(newGoodsData);  //追加新数据
+			if (this.current == 1) {
+				let maxpage = this.tabs[1].maxpage;
+				let page = this.tabs[1].page;
+				if (maxpage > page) {
+					this.tabs[1].page = page + 1;
+					this.runnerOrderPoolList({
+						'page': page + 1,
+						'status': 1,
+						schoolid: this.schoolId,
+						building_num: this.selectTxt
+					}, function (msg) {
+						_this.concatGoods2(msg, 'loading');
+					})
 				} else {
-					curTab.goods = newGoodsData
+					_this.$refs.uToast.show({
+						title: "没有更多了",
+					})
 				}
-				curTab.goods = curTab.goods.concat(newGoodsData); //追加新数据
-			},
-			handleRefresh() {
-				uni.startPullDownRefresh();
-			},
-			sectionChange(index) {
-				let _this = this;
-				this.current = index;
+			}
+			if (this.current == 2) {
+				let maxpage = this.tabs[2].maxpage;
+				let page = this.tabs[2].page;
+				if (maxpage > page) {
+					this.tabs[2].page = page + 1;
+					this.runnerOrderPoolList({
+						'page': page + 1,
+						'status': 2,
+						schoolid: this.schoolId,
+						building_num: this.selectTxt
+					}, function (msg) {
+						_this.concatGoods3(msg, 'loading');
+					})
+				} else {
+					_this.$refs.uToast.show({
+						title: "没有更多了",
+					})
+				}
+			}
+		} else {
+			let maxpage = this.tabsinner.maxpage;
+			let page = this.tabsinner.page;
+			if (maxpage > page) {
+				this.tabsinner.page = page + 1;
+				this.runnerOrderPoolList({
+					page: page + 1,
+					status: 2,
+					schoolid: this.schoolId,
+					building_num: this.selectTxt
+				}, function (msg) {
+					_this.concatGoods4(msg, 'loading');
+				});
+			} else {
+				_this.$refs.uToast.show({
+					title: "没有更多了",
+				});
+			}
+		}
 
+	},
+	methods: {
+		// 点击全部
+		selectAll() {
+			this.selectTxt = -1;
+			uni.setStorageSync('buildId', this.selectTxt)
+			uni.setStorageSync('buildName', '')
+			this.isAll = true
+			this.buildList.forEach(item => {
+				item.checked = false
+			})
+
+			this.sectionChange(this.current)
+
+		},
+		// 确认选择楼栋
+		buildComfirm() {
+			let arr = [],
+				arr2 = [];
+			this.buildList.forEach((item, index) => {
+				if (item.checked) {
+					arr.push(index)
+					arr2.push(item.name)
+				}
+				return item.checked
+			})
+			this.selectTxt = arr.join(",")
+			this.sessionTxt = arr2.join(",")
+			uni.setStorageSync('buildId', this.selectTxt)
+			uni.setStorageSync('buildName', this.sessionTxt)
+			if (!this.selectTxt) {
+				this.isAll = true
+			}
+			this.buildShow = false;
+			this.sectionChange(this.current)
+
+
+		},
+		getBuild() {
+			this.$store.dispatch('config/getConfig', {}).then((res) => {
+				if (res.code == 0) {
+					let schoolList = res.message.school_list.filter(item => {
+						return item.schoolid == this.schoolId
+					})
+					let arr = schoolList[0].building_num
+					this.buildList = arr.map(item => {
+						return {
+							name: item,
+							checked: false
+						}
+					})
+					this.buildList.forEach((item, index) => {
+						if (this.selectTxt != -1 && this.selectTxt.indexOf(index) >= 0) {
+							item.checked = true
+						} else {
+							item.checked = false
+						}
+					})
+				}
+			});
+		},
+		// 选择楼栋
+		checkBuild(item, index) {
+			this.buildList[index].checked = !this.buildList[index].checked
+			this.isAll = false
+		},
+		// 楼栋筛选弹窗
+		showBuildDialog() {
+			this.buildShow = true
+		},
+		init_list4: function (data, callback = () => { }) {
+			let _this = this;
+
+			this.runnerOrderPoolList(data, function (msg) {
+				_this.concatGoods4(msg);
+			});
+		},
+		concatGoods4(msg, status) {
+			let _this = this;
+			let curTab = this.tabsinner;
+			let newGoodsData = msg.orderlist;
+			curTab.maxpage = msg.maxpage;
+			if (status === 'loading') {
+				curTab.goods = curTab.goods.concat(newGoodsData);  //追加新数据
+			} else {
+				curTab.goods = newGoodsData
+			}
+			curTab.goods = curTab.goods.concat(newGoodsData); //追加新数据
+		},
+		handleRefresh() {
+			this.sectionChange(this.current)
+		},
+		sectionChange(index) {
+			let _this = this;
+			if (this.identity == 6) {
+				this.current = index;
 				if (index == 0) {
 					_this.init_list({
 						'page': 1,
@@ -568,467 +542,486 @@
 						building_num: this.selectTxt
 					});
 				}
-
-			},
-			init_list: function(data, callback = () => {}) {
-				let _this = this;
-
-				this.runnerOrderPoolList(data, function(msg) {
-					_this.concatGoods(msg);
-
-				});
-			},
-			init_list2: function(data, callback = () => {}) {
-				let _this = this;
-
-				this.runnerOrderPoolList(data, function(msg) {
-					_this.concatGoods2(msg);
-				});
-			},
-			init_list3: function(data, callback = () => {}) {
-				let _this = this;
-
-				this.runnerOrderPoolList(data, function(msg) {
-					_this.concatGoods3(msg);
-				});
-			},
-			concatGoods(msg, status) {
-				let _this = this;
-				let curTab = this.tabs[0];
-				let newGoodsData = msg.orderlist;
-				curTab.maxpage = msg.maxpage;
-				if (status === 'loading') {
-					curTab.goods = curTab.goods.concat(newGoodsData); //追加新数据
+			} else {
+				let maxpage = this.tabsinner.maxpage;
+				let page = this.tabsinner.page;
+				if (maxpage > page) {
+					this.tabsinner.page = page + 1;
+					this.runnerOrderPoolList({
+						page: page + 1,
+						status: 2,
+						schoolid: this.schoolId,
+						building_num: this.selectTxt
+					}, function (msg) {
+						_this.concatGoods4(msg);
+					});
 				} else {
-					curTab.goods = newGoodsData
+					_this.$refs.uToast.show({
+						title: "没有更多了",
+					});
+				}
+			}
+
+
+		},
+		init_list: function (data, callback = () => { }) {
+			let _this = this;
+
+			this.runnerOrderPoolList(data, function (msg) {
+				_this.concatGoods(msg);
+
+			});
+		},
+		init_list2: function (data, callback = () => { }) {
+			let _this = this;
+
+			this.runnerOrderPoolList(data, function (msg) {
+				_this.concatGoods2(msg);
+			});
+		},
+		init_list3: function (data, callback = () => { }) {
+			let _this = this;
+
+			this.runnerOrderPoolList(data, function (msg) {
+				_this.concatGoods3(msg);
+			});
+		},
+		concatGoods(msg, status) {
+			let _this = this;
+			let curTab = this.tabs[0];
+			let newGoodsData = msg.orderlist;
+			curTab.maxpage = msg.maxpage;
+			if (status === 'loading') {
+				curTab.goods = curTab.goods.concat(newGoodsData); //追加新数据
+			} else {
+				curTab.goods = newGoodsData
+			}
+
+		},
+		concatGoods2(msg, status) {
+			let _this = this;
+			let curTab = this.tabs[1];
+			let newGoodsData = msg.orderlist;
+			curTab.maxpage = msg.maxpage;
+			if (status === 'loading') {
+				curTab.goods = curTab.goods.concat(newGoodsData); //追加新数据
+			} else {
+				curTab.goods = newGoodsData
+			}
+
+		},
+		concatGoods3(msg, status) {
+			let _this = this;
+			let curTab = this.tabs[2];
+			let newGoodsData = msg.orderlist;
+			curTab.maxpage = msg.maxpage;
+			if (status === 'loading') {
+				curTab.goods = curTab.goods.concat(newGoodsData); //追加新数据
+			} else {
+				curTab.goods = newGoodsData
+			}
+
+		},
+		runnerOrderPoolList(data, callback = (company_list) => { }) {
+			let _this = this;
+			_this.$store.dispatch('runner/runnerOrderPool', data).then((res) => {
+				if (res.code == 0) {
+					callback(res.message);
+				} else {
+					_this.$refs.uToast.show({
+						title: res.message,
+					})
+				}
+			});
+		},
+		// 抢单
+		seizeOrder(order_token) {
+			let _this = this;
+			_this.$store.dispatch('runner/runnerReceiveOrder', {
+				'order_token': order_token
+			}).then((res) => {
+				if (res.code == 0) {
+					_this.$refs.uToast.show({
+						title: res.message,
+					})
+					_this.sectionChange(1)
+
+				} else {
+					_this.$refs.uToast.show({
+						title: res.message,
+					})
 				}
 
-			},
-			concatGoods2(msg, status) {
-				let _this = this;
-				let curTab = this.tabs[1];
-				let newGoodsData = msg.orderlist;
-				curTab.maxpage = msg.maxpage;
-				if (status === 'loading') {
-					curTab.goods = curTab.goods.concat(newGoodsData); //追加新数据
+			});
+		},
+		userScan(result) {
+			let _this = this;
+			_this.$store.dispatch('runner/runnerScanode', {
+				'qrcode_token': result
+			}).then((res) => {
+				if (res.code == 0) {
+					_this.$refs.uToast.show({
+						title: res.message,
+					})
+					_this.sectionChange(this.current)
 				} else {
-					curTab.goods = newGoodsData
+					_this.$refs.uToast.show({
+						title: res.message,
+					})
 				}
-
-			},
-			concatGoods3(msg,status) {
-				let _this = this;
-				let curTab = this.tabs[2];
-				let newGoodsData = msg.orderlist;
-				curTab.maxpage = msg.maxpage;
-				if (status === 'loading') {
-					curTab.goods = curTab.goods.concat(newGoodsData); //追加新数据
+			});
+		},
+		zhuandan(order_token) {
+			let _this = this;
+			_this.$store.dispatch('runner/runnerZdQrcode', {
+				'order_token': order_token,
+				"schoolid": _this.schoolId
+			}).then((res) => {
+				if (res.code == 0) {
+					_this.ZdQrcodeShow = true
+					_this.ZdQrcode = res.message
 				} else {
-					curTab.goods = newGoodsData
+					// _this.ZdQrcodeShow = false
+					_this.$refs.uToast.show({
+						title: res.message,
+					})
 				}
+			});
 
-			},
-			runnerOrderPoolList(data, callback = (company_list) => {}) {
-				let _this = this;
-				_this.$store.dispatch('runner/runnerOrderPool', data).then((res) => {
-					if (res.code == 0) {
-						callback(res.message);
-					} else {
-						_this.$refs.uToast.show({
-							title: res.message,
-						})
-					}
-					uni.stopPullDownRefresh();
-				});
-			},
-			// 抢单
-			seizeOrder(order_token) {
-				let _this = this;
-				_this.$store.dispatch('runner/runnerReceiveOrder', {
-					'order_token': order_token
-				}).then((res) => {
-					if (res.code == 0) {
-						_this.$refs.uToast.show({
-							title: res.message,
-						})
-						_this.sectionChange(1)
+		},
+		scan() {
+			//开始扫码
+			this.toHsScanCode({
+				evalName: "hs-scancode", //扫码回调监听事件
+				msg: "扫码", //提示文本
+				fil: '0,1,2' //条码类型
+			}, res => {
+				//扫码成功后 这里自己判断，如果要自己处理结果就返回 true
 
-					} else {
-						_this.$refs.uToast.show({
-							title: res.message,
-						})
-					}
+				return true
+			})
+		},
+		toHsScanCode(options, results) { //这里可以写成一个通用方法
+			let _this = this;
+			const q = Object.entries(options).map(([key, value]) => `${key}=${value}`).join('&')
+			uni.$on(options.evalName || "hs-scancode", ([error, res]) => {
+				if (res) { //扫码结果
+					uni.navigateBack({
+						delta: 1,
+						animationType: "fade-out", //用 fade-out 关闭页面，减少扫码成功后跳转页面的闪动
+						animationDuration: 300,
+					})
+					if (results && results(res) === true) {
+						_this.userScan(res.result)
+					};
+				} else {
+					//if (error.errMsg === "scanCode:fail cancel") toast("扫码取消")
+					// else  toast("扫码出错")
+				}
+			})
+			uni.navigateTo({
+				url: `/pages/hs-scancode/hs-scancode?${q}`
+			})
+		},
+		// 完成订单
+		endOrder(orderid) {
+			uni.navigateTo({
+				url: "/pages/completeOrder/completeOrder?orderid=" + orderid,
+			});
+		},
+		openMapApp(address) {
+			let _this = this;
+			uni.request({
+				url: 'https://apis.map.qq.com/ws/geocoder/v1/?address=' + address +
+					'&key=NN4BZ-4HAKT-NP4XL-VFOQJ-6SY67-JEBWR',
+				data: {},
+				success: (res) => {
 
-				});
-			},
-			userScan(result) {
-				let _this = this;
-				_this.$store.dispatch('runner/runnerScanode', {
-					'qrcode_token': result
-				}).then((res) => {
-					if (res.code == 0) {
-						_this.$refs.uToast.show({
-							title: res.message,
-						})
-						uni.startPullDownRefresh();
-					} else {
-						_this.$refs.uToast.show({
-							title: res.message,
-						})
-					}
-				});
-			},
-			zhuandan(order_token) {
-				let _this = this;
-				_this.$store.dispatch('runner/runnerZdQrcode', {
-					'order_token': order_token,
-          "schoolid":_this.schoolId
-				}).then((res) => {
-					if (res.code == 0) {
-						_this.ZdQrcodeShow = true
-						_this.ZdQrcode = res.message
-					} else {
-						// _this.ZdQrcodeShow = false
-						_this.$refs.uToast.show({
-							title: res.message,
-						})
-					}
-				});
+					let location = res.data.result.location;
+					let MapContext = wx.createMapContext('map');
+					MapContext.openMapApp({
+						longitude: location.lng,
+						latitude: location.lat,
+						destination: address,
+						success() {
 
-			},
-			scan() {
-				//开始扫码
-				this.toHsScanCode({
-					evalName: "hs-scancode", //扫码回调监听事件
-					msg: "扫码", //提示文本
-					fil: '0,1,2' //条码类型
-				}, res => {
-					//扫码成功后 这里自己判断，如果要自己处理结果就返回 true
-
-					return true
-				})
-			},
-			toHsScanCode(options, results) { //这里可以写成一个通用方法
-				let _this = this;
-				const q = Object.entries(options).map(([key, value]) => `${key}=${value}`).join('&')
-				uni.$on(options.evalName || "hs-scancode", ([error, res]) => {
-					if (res) { //扫码结果
-						uni.navigateBack({
-							delta: 1,
-							animationType: "fade-out", //用 fade-out 关闭页面，减少扫码成功后跳转页面的闪动
-							animationDuration: 300,
-						})
-						if (results && results(res) === true) {
-							_this.userScan(res.result)
-						};
-					} else {
-						//if (error.errMsg === "scanCode:fail cancel") toast("扫码取消")
-						// else  toast("扫码出错")
-					}
-				})
-				uni.navigateTo({
-					url: `/pages/hs-scancode/hs-scancode?${q}`
-				})
-			},
-			// 完成订单
-			endOrder(orderid) {
-				uni.navigateTo({
-					url: "/pages/completeOrder/completeOrder?orderid=" + orderid,
-				});
-			},
-			openMapApp(address) {
-				let _this = this;
-				uni.request({
-					url: 'https://apis.map.qq.com/ws/geocoder/v1/?address=' + address +
-						'&key=NN4BZ-4HAKT-NP4XL-VFOQJ-6SY67-JEBWR',
-					data: {},
-					success: (res) => {
-
-						let location = res.data.result.location;
-						let MapContext = wx.createMapContext('map');
-						MapContext.openMapApp({
-							longitude: location.lng,
-							latitude: location.lat,
-							destination: address,
-							success() {
-
-							},
-							fail(err) {
-								console.log(err)
-							}
-						})
-					},
-					fail() {
-						_this.$refs.uToast.show({
-							title: '导航失败，请联系管理员'
-						})
-					}
-				});
+						},
+						fail(err) {
+							console.log(err)
+						}
+					})
+				},
+				fail() {
+					_this.$refs.uToast.show({
+						title: '导航失败，请联系管理员'
+					})
+				}
+			});
 
 
-			},
-		}
-	};
+		},
+	}
+};
 </script>
 
 <style>
-	page {
-		background-color: #efefef;
-	}
+page {
+	background-color: #efefef;
+}
 
-	#tabInList {
-		background-color: #FFFFFF;
-		padding: 20rpx 0 0;
-	}
+#tabInList {
+	background-color: #FFFFFF;
+	padding: 20rpx 0 0;
+}
 
-	.u-mode-center-box {
-		border-radius: 20rpx !important;
-	}
+.u-mode-center-box {
+	border-radius: 20rpx !important;
+}
 
-	.product {
-		/* width: 100%; */
-		margin-bottom: 20rpx;
-	}
+.product {
+	/* width: 100%; */
+	margin-bottom: 20rpx;
+}
 
-	.product.shopproduct {
-		width: 100%;
-	}
+.product.shopproduct {
+	width: 100%;
+}
 </style>
 <style lang="scss" scoped>
-	.select-box {
-		padding: 20rpx;
-		display: flex;
-		flex-direction: row;
-		justify-content: flex-start;
-		align-items: center;
-		border-bottom: 1px solid #cccccc87;
+.select-box {
+	padding: 20rpx;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+	border-bottom: 1px solid #cccccc87;
 
-		.u-btn {
+	.u-btn {
 
-			margin: 10rpx;
-		}
-
-		view {
-			flex: 1;
-		}
-
-		.select-txt {
-			color: rgb(224, 98, 13);
-		}
+		margin: 10rpx;
 	}
 
-	.build-box {
-		padding: 20rpx;
+	view {
+		flex: 1;
+	}
+
+	.select-txt {
+		color: rgb(224, 98, 13);
+	}
+}
+
+.build-box {
+	padding: 20rpx;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+	flex-wrap: wrap;
+
+	.build-btn {
+		margin-right: 30rpx;
+		margin-bottom: 30rpx;
+		padding: 15rpx;
+		font-size: 12px;
+		height: 60rpx;
 		display: flex;
-		flex-direction: row;
-		justify-content: flex-start;
 		align-items: center;
-		flex-wrap: wrap;
+	}
 
-		.build-btn {
-			margin-right: 30rpx;
-			margin-bottom: 30rpx;
-			padding: 15rpx;
-			font-size: 12px;
-			height: 60rpx;
-			display: flex;
-			align-items: center;
-		}
+	.build-check {
+		background: #e0620d;
+		color: #fff;
+	}
 
-		.build-check {
-			background: #e0620d;
+}
+
+.build-confirm {
+	border-top: 1px solid #cccccc4b;
+	padding: 10rpx 40rpx;
+}
+
+.indexContent {
+	position: relative;
+}
+
+.inner {
+	.signfor {
+		position: fixed;
+		left: 50%;
+		bottom: 10%;
+		margin-left: -300rpx;
+		width: 600rpx;
+		padding: 30rpx 0;
+		border-radius: 100rpx;
+		background: #e0620d;
+		text-align: center;
+
+		text {
 			color: #fff;
+			font-size: 40rpx;
+			vertical-align: middle;
+			margin-left: 10rpx;
 		}
-
 	}
+}
 
-	.build-confirm {
-		border-top: 1px solid #cccccc4b;
-		padding: 10rpx 40rpx;
-	}
+.u-subsection .u-item-bg {
+	background-color: #FFFFFF;
+	color: #e0620d;
+}
 
-	.indexContent {
-		position: relative;
-	}
+.authorBtn {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 1000;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	opacity: 0;
+}
 
-	.inner {
-		.signfor {
-			position: fixed;
-			left: 50%;
-			bottom: 10%;
-			margin-left: -300rpx;
-			width: 600rpx;
-			padding: 30rpx 0;
-			border-radius: 100rpx;
-			background: #e0620d;
+/*吸顶悬浮，上拉加载，下拉刷新组件*/
+.demo-tip {
+	padding: 18rpx;
+	font-size: 24rpx;
+	text-align: center;
+}
+
+/*吸顶悬浮，上拉加载，下拉刷新组件end*/
+.box-group {
+	background: #ededed;
+	margin: 20rpx 20rpx;
+	display: flex;
+	border-radius: 20rpx;
+
+	.single-box {
+		flex: 1;
+		padding: 20rpx;
+		text-align: center;
+
+		.b-image {
+			position: relative;
+			width: 100rpx;
+			height: 100rpx;
+			border-radius: 50%;
+			overflow: hidden;
 			text-align: center;
+			margin: 0 auto;
+			background-color: #dddddd;
+		}
 
-			text {
-				color: #fff;
-				font-size: 40rpx;
-				vertical-align: middle;
-				margin-left: 10rpx;
+		.title {
+			margin-top: 10rpx;
+			font-size: 25rpx;
+			font-weight: 500;
+		}
+	}
+}
+
+// 商品card
+.product-list {
+
+	padding: 24rpx 24rpx 3vw 24rpx;
+	// display: flex;
+	// justify-content: space-between;
+	// flex-wrap: wrap;
+
+	.goodsproduct {
+		width: 100%;
+		padding: 30rpx;
+		border-radius: 15upx;
+		background-color: #fff;
+		margin: 0 0 25upx 0;
+		box-shadow: 0upx 5upx 25upx rgba(0, 0, 0, 0.1);
+
+		image {
+			width: 100%;
+			height: 300rpx;
+			border-radius: 15upx 15upx 0 0;
+		}
+
+		.name {
+			width: 100%;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 2;
+			text-align: justify;
+			overflow: hidden;
+			font-size: 30upx;
+		}
+
+		.info {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-end;
+			width: 100%;
+			padding: 10upx 0 10upx;
+
+			.price {
+				color: red;
+				font-size: 30upx;
+				font-weight: 600;
 			}
+
+		}
+
+		.slogan {
+			padding: 0 4% 10upx;
+			color: #807c87;
+			font-size: 24upx;
 		}
 	}
 
-	.u-subsection .u-item-bg {
-		background-color: #FFFFFF;
-		color: #6ee4c1;
+	.inner-btn {
+		font-size: 35rpx;
+		border-radius: 15rpx;
+		text-align: center;
+
+		padding: 25rpx;
+		color: #efefef;
 	}
 
-	.authorBtn {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		z-index: 1000;
-		top: 0;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		opacity: 0;
+	.color1 {
+		background: #e0620d;
 	}
 
-	/*吸顶悬浮，上拉加载，下拉刷新组件*/
-	.demo-tip {
-		padding: 18rpx;
-		font-size: 24rpx;
+	.color2 {
+		background: #0092e0;
+	}
+}
+
+.popup-content {
+	border-radius: 20rpx;
+	padding: 40rpx 20rpx;
+	font-family: 'Microsoft YaHei UI';
+
+	.loginTip {
+		font-size: 40rpx;
 		text-align: center;
 	}
 
-	/*吸顶悬浮，上拉加载，下拉刷新组件end*/
-	.box-group {
-		background: #ededed;
-		margin: 20rpx 20rpx;
+	.loginBtn {
+		position: relative;
 		display: flex;
+		width: 90%;
+		height: 100rpx;
+		margin: 60rpx auto;
 		border-radius: 20rpx;
+		background-color: #c69c6c;
+		justify-content: center;
+		align-items: center;
+		font-size: 35rpx;
+		color: #ffffff;
 
-		.single-box {
-			flex: 1;
-			padding: 20rpx;
-			text-align: center;
+		.item {
+			flex: auto;
 
-			.b-image {
-				position: relative;
-				width: 100rpx;
-				height: 100rpx;
-				border-radius: 50%;
-				overflow: hidden;
-				text-align: center;
-				margin: 0 auto;
-				background-color: #dddddd;
-			}
-
-			.title {
-				margin-top: 10rpx;
-				font-size: 25rpx;
-				font-weight: 500;
+			&:nth-child(2) {
+				padding-right: 10rpx;
 			}
 		}
 	}
-
-	// 商品card
-	.product-list {
-
-		padding: 24rpx 24rpx 3vw 24rpx;
-		// display: flex;
-		// justify-content: space-between;
-		// flex-wrap: wrap;
-
-		.goodsproduct {
-			width: 100%;
-			padding: 30rpx;
-			border-radius: 15upx;
-			background-color: #fff;
-			margin: 0 0 25upx 0;
-			box-shadow: 0upx 5upx 25upx rgba(0, 0, 0, 0.1);
-
-			image {
-				width: 100%;
-				height: 300rpx;
-				border-radius: 15upx 15upx 0 0;
-			}
-
-			.name {
-				width: 100%;
-				display: -webkit-box;
-				-webkit-box-orient: vertical;
-				-webkit-line-clamp: 2;
-				text-align: justify;
-				overflow: hidden;
-				font-size: 30upx;
-			}
-
-			.info {
-				display: flex;
-				justify-content: space-between;
-				align-items: flex-end;
-				width: 100%;
-				padding: 10upx 0 10upx;
-
-				.price {
-					color: red;
-					font-size: 30upx;
-					font-weight: 600;
-				}
-
-			}
-
-			.slogan {
-				padding: 0 4% 10upx;
-				color: #807c87;
-				font-size: 24upx;
-			}
-		}
-
-		.inner-btn {
-			font-size: 35rpx;
-			border-radius: 15rpx;
-			text-align: center;
-
-			padding: 25rpx;
-			color: #efefef;
-		}
-
-		.color1 {
-			background: #e0620d;
-		}
-
-		.color2 {
-			background: #0092e0;
-		}
-	}
-
-	.popup-content {
-		border-radius: 20rpx;
-		padding: 40rpx 20rpx;
-		font-family: 'Microsoft YaHei UI';
-
-		.loginTip {
-			font-size: 40rpx;
-			text-align: center;
-		}
-
-		.loginBtn {
-			position: relative;
-			display: flex;
-			width: 90%;
-			height: 100rpx;
-			margin: 60rpx auto;
-			border-radius: 20rpx;
-			background-color: #c69c6c;
-			justify-content: center;
-			align-items: center;
-			font-size: 35rpx;
-			color: #ffffff;
-
-			.item {
-				flex: auto;
-
-				&:nth-child(2) {
-					padding-right: 10rpx;
-				}
-			}
-		}
-	}
+}
 </style>

@@ -1,5 +1,5 @@
 <template>
-	<u-modal v-model="show" :show-cancel-button="true" confirm-text="升级" title="发现新版本" @cancel="cancel" @confirm="confirm" confirm-color="#6ee4c1">
+	<u-modal v-model="show" :show-cancel-button="true" confirm-text="升级" title="发现新版本" @cancel="cancel" @confirm="confirm" confirm-color="#e0620d">
 		<view class="u-update-content">
 			<rich-text :nodes="content"></rich-text>
 		</view>

@@ -48,14 +48,14 @@
 				<u-grid :col="4" :border="false">
 					<u-grid-item>
 						<view class="item-menu-image" @click="revenue()">
-							<u-icon name="xufei" custom-prefix="custom-icon" size="60" color="#6ee4c1"></u-icon>
+							<u-icon name="xufei" custom-prefix="custom-icon" size="60" color="#e0620d"></u-icon>
 						</view>
 						<view class="grid-text">收益明细</view>
 					</u-grid-item>
 					<u-grid-item>
 						<view class="item-menu-image" @click="settlement()"
 							style="display: flex; justify-content: center">
-							<u-icon name="order" size="60" color="#6ee4c1"></u-icon>
+							<u-icon name="order" size="60" color="#e0620d"></u-icon>
 						</view>
 						<view class="grid-text">结算清单</view>
 					</u-grid-item>
@@ -112,7 +112,7 @@
 
 			uni.setNavigationBarColor({
 				frontColor: "#ffffff",
-				backgroundColor: "#6ee4c1",
+				backgroundColor: "#e0620d",
 				animation: {
 					duration: 200,
 					timingFunc: "easeIn",
@@ -282,7 +282,7 @@
 	}
 
 	.user-box {
-		background-color: #6ee4c1;
+		background-color: #e0620d;
 	}
 
 	.d-flex {

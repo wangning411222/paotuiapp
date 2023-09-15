@@ -5,7 +5,7 @@
 	"pages": [{
 			"path": "pages/runner/runner",
 			"style": {
-				"navigationBarTitleText": "接单池",
+				"navigationBarTitleText": "迈校圈跑腿",
 				"enablePullDownRefresh": true
 			}
 		},
@@ -64,13 +64,13 @@
 	},
 	"tabBar": {
 		"color": "#7A7E83",
-		"selectedColor": "#6ee4c1",
+		"selectedColor": "#e0620d",
 		"borderStyle": "black",
 		"list": [{
 				"pagePath": "pages/runner/runner",
 				"iconPath": "static/tab/yujian.png",
 				"selectedIconPath": "static/tab/yujian-select.png",
-				"text": "订单"
+				"text": "迈校圈"
 			},
 			{
 				"pagePath": "pages/mine/mine",

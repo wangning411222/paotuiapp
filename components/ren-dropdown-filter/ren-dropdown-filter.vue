@@ -217,7 +217,7 @@ page {
                 justify-content: flex-end;
             }
             .actNav {
-                color: #6ee4c1;
+                color: #e0620d;
                 font-weight: bold;
             }
         }
@@ -256,7 +256,7 @@ page {
                 border-bottom: 2rpx solid #f5f6f9;
             }
             .actOpt {
-                color: #6ee4c1;
+                color: #e0620d;
                 font-weight: bold;
                 position: relative;
                 &::after {

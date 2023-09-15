@@ -31,11 +31,11 @@
 
 	/*每个页面公共css */
 	.bg_theme {
-		background-color: #6ee4c1;
+		background-color: #e0620d;
 	}
 
 	.color_theme {
-		color: #6ee4c1;
+		color: #e0620d;
 	}
 
 	.text-center {

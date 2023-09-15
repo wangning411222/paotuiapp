@@ -257,7 +257,7 @@
 
 	.u-subsection .u-item-bg {
 		background-color: #FFFFFF;
-		color: #6ee4c1;
+		color: #e0620d;
 	}
 
 	.authorBtn {
