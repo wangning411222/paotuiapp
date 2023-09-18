@@ -56,6 +56,7 @@
 							<u-empty text="没有相关数据" mode="order" style="margin: 0 auto;"></u-empty>
 						</view>
 					</view>
+          
 					<view @tap="handleRefresh"
 						style="position: fixed; right: 30rpx; bottom: 10%; width: 100rpx;height: 100rpx;border-radius: 100rpx; background: #e0620d;display: flex;justify-content: center;">
 						<u-icon name="reload" color="#fff" size="45" style="align-self: center;"></u-icon>
@@ -107,6 +108,14 @@
 							<u-empty text="没有相关数据" mode="order" style="margin: 0 auto;"></u-empty>
 						</view>
 					</view>
+          <view v-else @tap="scan()" class="margin-top-30"
+							style="font-size: 35rpx; border-radius: 15rpx;text-align: center;background: #e0620d;padding: 25rpx; color: #efefef;">
+							取货扫码
+						</view>
+          <view @tap="handleRefresh"
+						style="position: fixed; right: 30rpx; bottom: 10%; width: 100rpx;height: 100rpx;border-radius: 100rpx; background: #e0620d;display: flex;justify-content: center;">
+						<u-icon name="reload" color="#fff" size="45" style="align-self: center;"></u-icon>
+					</view>
 				</view>
 				<view v-if="current == 2" style="padding-top: 24rpx;">
 					<view v-for="(item, index) in goods3" :key="index" class="goodsproduct product">
@@ -157,6 +166,10 @@
 							<u-empty text="没有相关数据" mode="order" style="margin: 0 auto;"></u-empty>
 						</view>
 					</view>
+          <view @tap="handleRefresh"
+						style="position: fixed; right: 30rpx; bottom: 10%; width: 100rpx;height: 100rpx;border-radius: 100rpx; background: #e0620d;display: flex;justify-content: center;">
+						<u-icon name="reload" color="#fff" size="45" style="align-self: center;"></u-icon>
+					</view>
 				</view>
 			</view>
 			<view v-if="identity == 4" class="inner">
@@ -205,6 +218,10 @@
 						<view class="text-center padding-top-50">
 							<u-empty text="没有相关数据" mode="order" style="margin: 0 auto"></u-empty>
 						</view>
+					</view>
+          <view @tap="handleRefresh"
+						style="position: fixed; right: 30rpx; bottom: 10%; width: 100rpx;height: 100rpx;border-radius: 100rpx; background: #e0620d;display: flex;justify-content: center;">
+						<u-icon name="reload" color="#fff" size="45" style="align-self: center;"></u-icon>
 					</view>
 				</view>
 				<view class="signfor" @tap="scan">
@@ -284,7 +301,7 @@ export default {
 			},
 			isAll: true,
 			buildList: [],
-			selectTxt: -1, //提交的楼栋id
+			selectTxt: 'all', //提交的楼栋id
 			sessionTxt: "", //选中的楼栋name
 			schoolId: ""
 
@@ -292,31 +309,20 @@ export default {
 	},
 	onShow() {
 		this.getBuild()
+    this.sectionChange(this.current)
 	},
+  onPullDownRefresh(){
+    this.sectionChange(this.current)
+  },
 	onLoad() {
-		console.log('执行没``````````')
 		this.identity = uni.getStorageSync('userInfo').gid
 		this.schoolId = uni.getStorageSync('userInfo').nid;
-		this.selectTxt = uni.getStorageSync('buildId') ? uni.getStorageSync('buildId') : -1
+		this.selectTxt = uni.getStorageSync('buildId') ? uni.getStorageSync('buildId') : 'all'
 		this.sessionTxt = uni.getStorageSync('buildName')
 		if (this.sessionTxt) {
 			this.isAll = false
 		}
-		if (this.identity == 6) {
-			this.init_list({
-				page: 1,
-				status: this.status,
-				schoolid: this.schoolId,
-				building_num: this.selectTxt
-			});
-		} else {
-			this.init_list4({
-				page: 1,
-				status: 2,
-				schoolid: this.schoolId,
-				building_num: this.selectTxt
-			});
-		}
+		
 
 
 	},
@@ -420,7 +426,7 @@ export default {
 	methods: {
 		// 点击全部
 		selectAll() {
-			this.selectTxt = -1;
+			this.selectTxt = 'all';
 			uni.setStorageSync('buildId', this.selectTxt)
 			uni.setStorageSync('buildName', '')
 			this.isAll = true
@@ -468,7 +474,7 @@ export default {
 						}
 					})
 					this.buildList.forEach((item, index) => {
-						if (this.selectTxt != -1 && this.selectTxt.indexOf(index) >= 0) {
+						if (this.selectTxt != 'all' && this.selectTxt.indexOf(index) >= 0) {
 							item.checked = true
 						} else {
 							item.checked = false
@@ -486,7 +492,7 @@ export default {
 		showBuildDialog() {
 			this.buildShow = true
 		},
-		init_list4: function (data, callback = () => { }) {
+		init_list4: function (data, callback = () => { },status) {
 			let _this = this;
 
 			this.runnerOrderPoolList(data, function (msg) {
@@ -506,7 +512,8 @@ export default {
 			curTab.goods = curTab.goods.concat(newGoodsData); //追加新数据
 		},
 		handleRefresh() {
-			this.sectionChange(this.current)
+      this.sectionChange(this.current)
+			
 		},
 		sectionChange(index) {
 			let _this = this;
@@ -564,7 +571,7 @@ export default {
 
 
 		},
-		init_list: function (data, callback = () => { }) {
+		init_list: function (data, callback = () => { },status) {
 			let _this = this;
 
 			this.runnerOrderPoolList(data, function (msg) {
@@ -572,14 +579,14 @@ export default {
 
 			});
 		},
-		init_list2: function (data, callback = () => { }) {
+		init_list2: function (data, callback = () => { },status) {
 			let _this = this;
 
 			this.runnerOrderPoolList(data, function (msg) {
 				_this.concatGoods2(msg);
 			});
 		},
-		init_list3: function (data, callback = () => { }) {
+		init_list3: function (data, callback = () => { },status) {
 			let _this = this;
 
 			this.runnerOrderPoolList(data, function (msg) {
@@ -627,6 +634,7 @@ export default {
 			_this.$store.dispatch('runner/runnerOrderPool', data).then((res) => {
 				if (res.code == 0) {
 					callback(res.message);
+          uni.stopPullDownRefresh()
 				} else {
 					_this.$refs.uToast.show({
 						title: res.message,
@@ -644,7 +652,7 @@ export default {
 					_this.$refs.uToast.show({
 						title: res.message,
 					})
-					_this.sectionChange(1)
+					_this.sectionChange(_this.current)
 
 				} else {
 					_this.$refs.uToast.show({
@@ -663,7 +671,7 @@ export default {
 					_this.$refs.uToast.show({
 						title: res.message,
 					})
-					_this.sectionChange(this.current)
+					_this.sectionChange(_this.current)
 				} else {
 					_this.$refs.uToast.show({
 						title: res.message,

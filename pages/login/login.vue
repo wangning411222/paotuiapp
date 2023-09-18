@@ -9,7 +9,7 @@
 					<image src="../../static/imgs/logo.png" mode="widthFix" style="width: 100rpx; height: 100rpx;">
 					</image>
 				</view>
-				<view class="back_bbs" @click="back_bbs"><span class="iconfont icon-guanbi"
+				<view class="back_bbs" ><span class="iconfont icon-guanbi"
 						style="font-size: 40rpx; vertical-align: middle;"></span></view>
 			</view>
 			<view>

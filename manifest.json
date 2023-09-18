@@ -12,6 +12,9 @@
                 "offset" : "none"
             }
         },
+        "compatible" : {
+            "ignoreVersion" : false
+        },
         "usingComponents" : true,
         "nvueCompiler" : "uni-app",
         "compilerVersion" : 3,
