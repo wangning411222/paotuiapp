@@ -13,7 +13,7 @@
             }
         },
         "compatible" : {
-            "ignoreVersion" : true
+            "ignoreVersion" : false
         },
         "usingComponents" : true,
         "nvueCompiler" : "uni-app",

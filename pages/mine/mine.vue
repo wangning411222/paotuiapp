@@ -62,7 +62,10 @@
 				</u-grid>
 			</view>
 		</view>
-
+    <view class="btn-box">
+       <u-button type="warning" @click="logout">退出登录</u-button>
+    </view>
+   
 		<u-top-tips ref="uTips"></u-top-tips>
 		<u-toast ref="uToast" />
 	</view>
@@ -79,7 +82,9 @@
 	import {
 		domain
 	} from "../../tools/utils.js";
+import uButton from '../../uview-ui/components/u-button/u-button.vue';
 	export default {
+  components: { uButton },
 		data() {
 			return {
 				showAuthorizationModal: false,
@@ -128,6 +133,11 @@
 			});
 		},
 		methods: {
+    // 退出登录
+    logout(){
+      uni.clearStorage()
+      uni.reLaunch({ url: '/pages/login/login' })
+    },
 
 			...mapMutations(["user/setUserInfo", "user/setAuthorized"]),
 			user() {
@@ -251,6 +261,9 @@
 </script>
 
 <style lang="scss">
+.btn-box{
+  padding:40rpx 50rpx;
+}
 	canvas {
 		height: 180px !important;
 	}

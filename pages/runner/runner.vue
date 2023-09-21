@@ -229,27 +229,25 @@
 					<text>扫码取餐</text>
 				</view>
 			</view>
-
-			<u-popup v-model="ZdQrcodeShow" mode="center" closeable>
-				<view>
-					<image :src="ZdQrcode" mode="aspectFit" style="width: 400rpx;height: 400rpx;">
-					</image>
-				</view>
-			</u-popup>
-			<u-toast ref="uToast" />
-			<u-popup v-model="buildShow" mode="top">
-				<view class="build-box">
-					<button v-for="(item, index) in buildList" :key="index" class="build-btn"
-						:class="item.checked ? 'build-check' : ''" @click="checkBuild(item, index)" :plain="true">{{
-							item.name
-						}}</button>
-				</view>
-				<view class="build-confirm">
-					<button @click="buildComfirm"> 确认</button>
-				</view>
-			</u-popup>
 		</view>
-
+      <u-toast ref="uToast" />
+      <u-popup v-model="ZdQrcodeShow" mode="center" closeable>
+        <view>
+          <image :src="ZdQrcode" mode="aspectFit" style="width: 400rpx;height: 400rpx;">
+          </image>
+        </view>
+      </u-popup>
+      <u-popup v-model="buildShow" mode="top">
+        <view class="build-box">
+          <button v-for="(item, index) in buildList" :key="index" class="build-btn"
+            :class="item.checked ? 'build-check' : ''" @click="checkBuild(item, index)" :plain="true">{{
+              item.name
+            }}</button>
+        </view>
+        <view class="build-confirm">
+          <button @click="buildComfirm"> 确认</button>
+        </view>
+      </u-popup>
 	</view>
 </template>
 
@@ -308,8 +306,9 @@ export default {
 		};
 	},
 	onShow() {
-		this.getBuild()
-    this.sectionChange(this.current)
+		  this.getBuild()
+      this.sectionChange(this.current)
+    
 	},
   onPullDownRefresh(){
     this.sectionChange(this.current)
@@ -406,7 +405,7 @@ export default {
 			let maxpage = this.tabsinner.maxpage;
 			let page = this.tabsinner.page;
 			if (maxpage > page) {
-				this.tabsinner.page = page + 1;
+      this.tabsinner.page=page+1
 				this.runnerOrderPoolList({
 					page: page + 1,
 					status: 2,
@@ -492,30 +491,12 @@ export default {
 		showBuildDialog() {
 			this.buildShow = true
 		},
-		init_list4: function (data, callback = () => { },status) {
-			let _this = this;
-
-			this.runnerOrderPoolList(data, function (msg) {
-				_this.concatGoods4(msg);
-			});
-		},
-		concatGoods4(msg, status) {
-			let _this = this;
-			let curTab = this.tabsinner;
-			let newGoodsData = msg.orderlist;
-			curTab.maxpage = msg.maxpage;
-			if (status === 'loading') {
-				curTab.goods = curTab.goods.concat(newGoodsData);  //追加新数据
-			} else {
-				curTab.goods = newGoodsData
-			}
-			curTab.goods = curTab.goods.concat(newGoodsData); //追加新数据
-		},
 		handleRefresh() {
       this.sectionChange(this.current)
 			
 		},
 		sectionChange(index) {
+  
 			let _this = this;
 			if (this.identity == 6) {
 				this.current = index;
@@ -550,26 +531,22 @@ export default {
 					});
 				}
 			} else {
-				let maxpage = this.tabsinner.maxpage;
-				let page = this.tabsinner.page;
-				if (maxpage > page) {
-					this.tabsinner.page = page + 1;
-					this.runnerOrderPoolList({
-						page: page + 1,
+        _this.init_list4({	
+            page:  1,
 						status: 2,
 						schoolid: this.schoolId,
-						building_num: this.selectTxt
-					}, function (msg) {
-						_this.concatGoods4(msg);
-					});
-				} else {
-					_this.$refs.uToast.show({
-						title: "没有更多了",
-					});
-				}
+						building_num: this.selectTxt}
+          )
+					
 			}
 
 
+		},
+    init_list4: function (data, callback = () => { },status) {
+			let _this = this;
+			this.runnerOrderPoolList(data, function (msg) {
+				_this.concatGoods4(msg);
+			});
 		},
 		init_list: function (data, callback = () => { },status) {
 			let _this = this;
@@ -592,6 +569,16 @@ export default {
 			this.runnerOrderPoolList(data, function (msg) {
 				_this.concatGoods3(msg);
 			});
+		},
+    concatGoods4(msg, status) {
+			let curTab = this.tabsinner;
+			let newGoodsData = msg.orderlist;
+			curTab.maxpage = msg.maxpage;
+			if (status === 'loading') {
+				curTab.goods = curTab.goods.concat(newGoodsData);  //追加新数据
+			} else {
+				curTab.goods = newGoodsData
+			}
 		},
 		concatGoods(msg, status) {
 			let _this = this;
@@ -856,7 +843,7 @@ page {
 	.signfor {
 		position: fixed;
 		left: 50%;
-		bottom: 10%;
+		bottom: 20%;
 		margin-left: -300rpx;
 		width: 600rpx;
 		padding: 30rpx 0;
